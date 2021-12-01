@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.user.UserDao">
+    <!-- 查询用户表记录数 -->
+    <select id="getUsercount" resultType="int">
+        select count(*)
+        from smbms_user
+    </select>
+    <select id="getUserList" resultType="cn.smbms.beans.User">
+        select *
+        from smbms_user;
+    </select>
+    <select id="getUserListByNameadnRole" resultType="cn.smbms.beans.User" parameterType="map">
+        select *
+        from smbms_user
+        where userName like CONCAT('%', #{userName}, '%')
+          and userRole = #{userRole};
+    </select>
+    <select id="">
+        select smbms_bill.*, smbms_provider.proName
+        from smbms_bill,
+             smbms_provider
+        where smbms_bill.productName like CONCAT('%', #{productName}, '%')
+          and smbms_bill.providerId = smbms_provider.id;
+    </select>
+    <insert id="addUser" parameterType="User">
+        insert into smbms_user(userCode, userName, userPassword)
+        values (#{userCode}, #{userName}, #{userPassword});
+    </insert>
+    <update id="updateUser2">
+        update smbms_user
+        set userName = #{userName}
+        where id = #{id};
+    </update>
+    <delete id="deleteUser" parameterType="User">
+        delete
+        from smbms_user
+        where id = #{id};
+    </delete>
+    <select id="getUserByRoleId" parameterType="User" resultMap="userByRoleId">
+        select u.id, u.userRole, u.userName, u.address, r.id, r.roleName
+        from smbms_user u,
+             smbms_role r
+        where u.userRole = #{id}
+          and u.userRole = r.id;
+    </select>
+    <resultMap id="userByRoleId" type="User">
+        <id property="id" column="id"></id>
+        <result property="id" column="id"></result>
+        <result property="userRole" column="userRole"></result>
+        <result property="userName" column="userName"></result>
+        <result property="address" column="address"></result>
+        <!--        <result property="userRole" column="roleName"></result>-->
+        <result property="Role" column="roleName"/>
+        <association property="Role" javaType="Role"></association>
+    </resultMap>
+
+    <select id="getUserRoleName" parameterType="User" resultMap="userRole">
+        select u.id, u.userName, u.address, r.roleName
+        from smbms_user u,
+             smbms_role r
+        where u.id = #{id}
+          and u.userRole = r.id;
+    </select>
+    <resultMap id="userRole" type="User">
+        <result property="Role" column="RoleName"></result>
+    </resultMap>
+</mapper>

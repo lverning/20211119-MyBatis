@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.user.BillDao">
+    <select id="getBill" resultType="cn.smbms.beans.Bill" resultMap="getBillList">
+        select smbms_bill.*, smbms_provider.proName
+        from smbms_bill,
+             smbms_provider
+        where smbms_bill.productName like CONCAT('%', #{productName}, '%')
+          and smbms_bill.providerId = smbms_provider.id;
+    </select>
+    <resultMap id="getBillList" type="cn.smbms.beans.Bill">
+        <result column="proName" property="proName"></result>
+    </resultMap>
+
+    <select id="getBillproNameandproid"  resultMap="Prodivder">
+        select b.billCode,
+               b.productName,
+               p.proCode,
+               p.proName,
+               p.proContact,
+               p.proPhone,
+               b.totalPrice,
+               b.isPayment
+        from smbms_bill b,
+             smbms_provider p
+        where b.productName like CONCAT('%', #{productName}, '%')
+          and b.providerId = #{providerId}
+          and b.isPayment = #{isPayment};
+    </select>
+    <resultMap id="Prodivder" type="Bill">
+        <result property="billCode" column="billCode"/>
+        <result property="productName" column="productName"/>
+        <result property="totalPrice" column="totalPrice"/>
+        <result property="isPayment" column="isPayment"/>
+        <association property="proCode" column="proCode" javaType="Prodvider">
+            <result property="proName" column="proName"/>
+            <result property="proContact" column="proContact"/>
+            <result property="proPhone" column="proPhone"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getBillListByProductNameAndProvider" resultMap="roleMap" >
+        select b.billCode, b.productName ,p.proCode , p.proName , p.proContact ,p.proPhone,
+               b.totalPrice , b.isPayment
+        from smbms_bill b,smbms_provider p
+        where b.productName like CONCAT ('%',#{productName},'%')
+          and b.providerId = #{providerId}
+          and b.isPayment = #{isPaid}
+          and b.providerId = p.id
+
+    </select>
+
+    <resultMap id="roleMap" type="Bill" >
+        <result property="billCode" column="billCode" />
+        <result property="productName" column="productName" />
+        <result property="totalPrice" column="totalPrice" />
+        <result property="isPayment" column="isPayment" />
+        <association property="provider" javaType="Provider" resultMap="provideMap">
+        </association>
+    </resultMap>
+
+    <resultMap id="provideMap" type="Provider" >
+        <result property="proCode" column="proCode" />
+        <result property="proName" column="proName" />
+        <result property="proContact" column="proContact" />
+        <result property="proPhone" column="proPhone" />
+    </resultMap>
+
+</mapper>
